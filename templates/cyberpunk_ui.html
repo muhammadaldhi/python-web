@@ -1,0 +1,1315 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ALWI-EA // NETRUNNER_CORE</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --bg-color: #0a0a12;
+        --panel-bg: #121222;
+        --neon-cyan: #00f0ff;
+        --neon-magenta: #ff0055;
+        --neon-green: #39ff14;
+        --neon-amber: #ffaa00;
+        --text-color: #e0e0ff;
+        --border-glow: 0 0 10px rgba(0, 240, 255, 0.3);
+      }
+
+      body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
+        font-family: "Courier New", Courier, monospace;
+        margin: 0;
+        padding: 20px;
+        background-image: radial-gradient(
+          rgba(18, 18, 34, 0.8) 15%,
+          transparent 16%
+        );
+        background-size: 20px 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      header {
+        text-align: center;
+        border-bottom: 3px double var(--neon-magenta);
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+        text-shadow: 0 0 10px rgba(255, 0, 85, 0.6);
+      }
+
+      header h1 {
+        margin: 0;
+        font-size: 2.5rem;
+        color: var(--neon-magenta);
+        letter-spacing: 4px;
+      }
+
+      header p {
+        margin: 5px 0 0 0;
+        color: var(--neon-cyan);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+      }
+
+      .card {
+        background: var(--panel-bg);
+        border: 1px solid var(--neon-cyan);
+        border-radius: 4px;
+        padding: 20px;
+        box-shadow: var(--border-glow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card::before {
+        content: "SYS_CTRL //";
+        position: absolute;
+        top: 5px;
+        right: 10px;
+        font-size: 0.6rem;
+        color: rgba(0, 240, 255, 0.4);
+      }
+
+      .card h2 {
+        margin-top: 0;
+        font-size: 1.2rem;
+        color: var(--neon-cyan);
+        border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+        padding-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      label {
+        display: block;
+        margin-bottom: 6px;
+        font-size: 0.85rem;
+        color: #aaaaff;
+        text-transform: uppercase;
+      }
+
+      input[type="number"],
+      input[type="text"],
+      input[type="file"],
+      select,
+      textarea {
+        width: 100%;
+        background: #05050a;
+        border: 1px solid rgba(0, 240, 255, 0.5);
+        padding: 8px 12px;
+        color: var(--neon-green);
+        font-family: inherit;
+        font-size: 1rem;
+        box-sizing: border-box;
+        border-radius: 2px;
+        transition: all 0.3s;
+      }
+
+      textarea {
+        resize: vertical;
+        font-size: 0.85rem;
+        color: #ffaa00;
+      }
+
+      input:focus,
+      select:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--neon-magenta);
+        box-shadow: 0 0 8px rgba(255, 0, 85, 0.5);
+      }
+
+      .btn-submit {
+        grid-column: 1 / -1;
+        background: transparent;
+        color: var(--neon-cyan);
+        border: 2px solid var(--neon-cyan);
+        padding: 15px;
+        font-size: 1.2rem;
+        font-family: inherit;
+        font-weight: bold;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        box-shadow: var(--border-glow);
+        transition: all 0.3s;
+        margin-top: 10px;
+      }
+
+      .btn-submit:hover {
+        background: var(--neon-cyan);
+        color: #000;
+        box-shadow: 0 0 20px var(--neon-cyan);
+      }
+
+      .btn-sec {
+        background: transparent;
+        color: var(--neon-magenta);
+        border: 1px solid var(--neon-magenta);
+        padding: 8px 12px;
+        font-family: inherit;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 5px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        transition: all 0.3s;
+      }
+
+      .btn-sec:hover {
+        background: var(--neon-magenta);
+        color: #000;
+        box-shadow: 0 0 10px var(--neon-magenta);
+      }
+
+      .telemetry-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 6px 0;
+        border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+        font-size: 0.9rem;
+      }
+      .telemetry-val {
+        font-weight: bold;
+        color: var(--neon-green);
+      }
+
+      .live-tag {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: var(--neon-green);
+        border-radius: 50%;
+        margin-right: 5px;
+        box-shadow: 0 0 8px var(--neon-green);
+        animation: blink 1.5s infinite;
+      }
+
+      @keyframes blink {
+        0% {
+          opacity: 0.3;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.3;
+        }
+      }
+
+      /* Cyberpunk Modal Custom */
+      .cyber-modal {
+        display: none;
+        position: fixed;
+        z-index: 10000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(5, 5, 10, 0.85);
+        backdrop-filter: blur(5px);
+        align-items: center;
+        justify-content: center;
+      }
+      .pulse-update {
+  animation: neon-flash 0.3s ease-out;
+}
+
+@keyframes neon-flash {
+  0% { text-shadow: 0 0 15px var(--neon-green); opacity: 0.5; }
+  100% { text-shadow: none; opacity: 1; }
+}
+      .cyber-modal-content {
+        background-color: var(--panel-bg);
+        border: 2px solid var(--neon-magenta);
+        box-shadow: 0 0 30px rgba(255, 0, 85, 0.5);
+        padding: 30px;
+        width: 90%;
+        max-width: 500px;
+        text-align: center;
+        border-radius: 4px;
+        animation: modalSlide 0.3s ease;
+      }
+      @keyframes modalSlide {
+        from {
+          transform: translateY(-50px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+      
+/* Watermark Cyber-Terminal Style */
+.cyber-watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  
+  /* Font bergaya terminal/hacker */
+  font-family: 'Courier New', Courier, monospace; 
+  font-size: 10rem; 
+  font-weight: 800;
+  
+  /* Efek warna neon cyan/glitch */
+  color: rgba(0, 255, 255, 0.06); 
+  text-shadow: 
+    0 0 5px rgba(0, 255, 255, 0.3),
+    2px 2px 0px rgba(255, 0, 255, 0.1); /* Sedikit sentuhan magenta untuk efek glitch */
+  
+  /* Tidak mengganggu mouse/input */
+  pointer-events: none; 
+  z-index: 999999;
+  user-select: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+  
+  /* Tambahkan sedikit miring untuk kesan futuristik */
+  transform: translate(-50%, -50%) rotate(-5deg);
+}
+
+/* Tambahkan efek statis/scanline samar di atas watermark */
+.cyber-watermark::after {
+  content: " ";
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.02) 50%);
+  background-size: 100% 4px;
+  pointer-events: none;
+}
+/* Responsif untuk layar hp agar tidak kemakan border */
+@media (max-width: 768px) {
+  .cyber-watermark {
+    font-size: 3.5rem;
+    letter-spacing: 5px;
+  }
+}
+
+      /* Toast Notification */
+      #toast-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 99999;
+      }
+      .toast {
+        background: #05050a;
+        border-left: 5px solid var(--neon-green);
+        color: #fff;
+        padding: 15px 25px;
+        margin-top: 10px;
+        font-family: monospace;
+        box-shadow: 0 0 15px rgba(57, 255, 20, 0.2);
+        border-radius: 2px;
+        animation: toastIn 0.3s ease forwards;
+      }
+      @keyframes toastIn {
+        from {
+          transform: translateX(120%);
+        }
+        to {
+          transform: translateX(0);
+        }
+      }
+
+      /* File List Table */
+      .file-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+        font-size: 0.85rem;
+      }
+      .file-table td {
+        padding: 8px;
+        border-bottom: 1px dashed rgba(0, 240, 255, 0.2);
+      }
+      .file-actions {
+        text-align: right;
+        white-space: nowrap;
+      }
+      .action-icon {
+        cursor: pointer;
+        margin-left: 10px;
+        transition: color 0.2s;
+      }
+      .action-icon.view-icon {
+        color: var(--neon-cyan);
+      }
+      .action-icon.view-icon:hover {
+        color: #fff;
+        text-shadow: 0 0 5px var(--neon-cyan);
+      }
+      .action-icon.delete-icon {
+        color: var(--neon-magenta);
+      }
+      .action-icon.delete-icon:hover {
+        color: #fff;
+        text-shadow: 0 0 5px var(--neon-magenta);
+      }
+    </style>
+  </head>
+  <body>
+  <div class="cyber-watermark">ALWI-EA</div>
+    <div id="toast-container"></div>
+
+    <div id="emergencyModal" class="cyber-modal">
+      <div class="cyber-modal-content">
+        <h2
+          style="
+            color: var(--neon-magenta);
+            border: none;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+          "
+        >
+          ⚠️ CRITICAL WARNING ⚠️
+        </h2>
+        <p
+          style="
+            color: var(--text-color);
+            margin-bottom: 25px;
+            line-height: 1.5;
+          "
+        >
+          Sistem mendeteksi permintaan
+          <span style="color: var(--neon-magenta); font-weight: bold"
+            >FORCE SHUTDOWN</span
+          >.<br />
+          MQL5 akan dipaksa menutup seluruh posisi aktif saat ini juga dan
+          mencopot EA dari Chart global!
+        </p>
+        <div style="display: flex; gap: 15px">
+          <button
+            class="btn-sec"
+            style="margin: 0"
+            onclick="closeEmergencyModal()"
+          >
+            ABORT_MATRIX
+          </button>
+          <form method="POST" action="/emergency_stop" style="flex: 1">
+            <button
+              type="submit"
+              class="btn-submit"
+              style="
+                background: var(--neon-magenta);
+                color: #000;
+                border-color: var(--neon-magenta);
+                margin: 0;
+                padding: 10px;
+                font-size: 1rem;
+              "
+            >
+              CONFIRM_KILL_BOT
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div id="deleteConfirmModal" class="cyber-modal">
+      <div class="cyber-modal-content" style="border-color: var(--neon-magenta); box-shadow: 0 0 30px rgba(255, 0, 85, 0.4);">
+        <h2 style="color: var(--neon-magenta); border: none; font-size: 1.5rem; margin-bottom: 15px;">
+          ⚡ WIPE RECONNAISSANCE FILE ⚡
+        </h2>
+        <p style="color: var(--text-color); margin-bottom: 25px; line-height: 1.5; font-size: 0.95rem;">
+          Anda akan menghapus data arsip: <br>
+          <span id="target-delete-filename" style="color: var(--neon-amber); font-weight: bold; font-family: monospace;">---</span><br><br>
+          Tindakan ini akan memformat sektor penyimpanan local terminal database secara permanen!
+        </p>
+        <div style="display: flex; gap: 15px;">
+          <button class="btn-sec" style="margin: 0; color: var(--neon-cyan); border-color: var(--neon-cyan);" onclick="closeDeleteModal()">
+            CANCEL_WIPE
+          </button>
+          <button id="executeDeleteBtn" class="btn-submit" style="background: var(--neon-magenta); color: #000; border-color: var(--neon-magenta); margin: 0; padding: 10px; font-size: 1rem; flex: 1;">
+            EXECUTE_WIPE_DATA
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <header>
+        <h1>ALWI-EA // NETRUNNER</h1>
+        <p>
+          <span class="live-tag"></span> MAIN CONTROL PANEL //
+          AM_VER_18.04
+        </p>
+      </header>
+
+      <div
+        class="card"
+        style="
+          border-color: var(--neon-cyan);
+          box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+          margin-bottom: 30px;
+        "
+      >
+        <h2 style="color: var(--neon-cyan); margin-bottom: 15px">
+          📊 LIVE CHART TELEMETRY MONITOR
+        </h2>
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+          "
+        >
+          <div>
+            <div class="telemetry-row">
+              <span>PAIR / TF:</span>
+              <span class="telemetry-val" style="color: white" id="val-pair-tf"
+                >{{ telemetry.pair_tf }}</span
+              >
+            </div>
+            <div class="telemetry-row">
+              <span>BALANCE:</span>
+              <span class="telemetry-val" id="val-balance"
+                >$ {{ telemetry.balance }}</span
+              >
+            </div>
+            <div class="telemetry-row">
+              <span>EQUITY:</span>
+              <span class="telemetry-val" id="val-equity"
+                >$ {{ telemetry.equity }}</span
+              >
+            </div>
+          </div>
+          <div>
+            <div class="telemetry-row">
+              <span>FREE MARGIN:</span>
+              <span class="telemetry-val" id="val-free-margin"
+                >$ {{ telemetry.free_margin }}</span
+              >
+            </div>
+            <div class="telemetry-row">
+              <span>FLOATING:</span>
+              <span
+                class="telemetry-val"
+                id="val-profit"
+                style="color: {% if telemetry.profit >= 0 %}var(--neon-green){% else %}var(--neon-magenta){% endif %};"
+              >
+                $ {{ telemetry.profit }}
+              </span>
+            </div>
+            <div class="telemetry-row">
+              <span>ACTIVE LAYERS:</span>
+              <span class="telemetry-val" style="color: orange" id="val-layers"
+                >{{ telemetry.layers }}</span
+              >
+            </div>
+          </div>
+        </div>
+        <div
+          class="telemetry-row"
+          style="
+            margin-top: 10px;
+            border: none;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 8px;
+            border-radius: 3px;
+          "
+        >
+          <span>CURRENT MT5 SIGNAL STATUS:</span>
+          <span class="telemetry-val" style="color: cyan" id="val-signal"
+            >{{ telemetry.signal }}</span
+          >
+        </div>
+      </div>
+
+      <div
+        class="card"
+        style="
+          border-color: var(--neon-magenta);
+          box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+          margin-bottom: 30px;
+        "
+      >
+        <h2>🚨 SYSTEM EMERGENCY BREAK // FORCE KILL BOT</h2>
+        <p style="font-size: 0.85rem; color: #8888cc">
+          Kirim instruksi darurat ke MQL5 untuk langsung melakukan close all
+          order dan pencopotan EA dari chart.
+        </p>
+
+        {% if settings.InpEmergencyStop %}
+        <div
+          style="
+            background: rgba(255, 0, 85, 0.2);
+            border: 1px solid var(--neon-magenta);
+            padding: 12px;
+            color: #ff3333;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 12px;
+            font-family: monospace;
+            letter-spacing: 1px;
+          "
+        >
+          STATUS MATRIX: [ EMERGENCY_STOP_ACTIVE ] -> WAITING FOR EA RE-SYNC &
+          SHUTDOWN_
+        </div>
+        <form method="POST" action="/emergency_reset">
+          <button
+            type="submit"
+            class="btn-submit"
+            style="
+              border-color: var(--neon-green);
+              color: var(--neon-green);
+              margin: 0;
+              padding: 10px;
+            "
+          >
+            ⚡ RESET SYSTEM TO NORMAL CONTROL
+          </button>
+        </form>
+        {% else %}
+        <div
+          style="
+            background: rgba(57, 255, 20, 0.1);
+            border: 1px solid var(--neon-green);
+            padding: 8px;
+            color: var(--neon-green);
+            font-size: 0.8rem;
+            text-align: center;
+            margin-bottom: 12px;
+          "
+        >
+          STATUS MATRIX: OPERATIONAL NORMAL // NO DEFENSE BREACH DETECTED
+        </div>
+        <button
+          type="button"
+          class="btn-submit"
+          style="
+            background: var(--neon-magenta);
+            color: #000;
+            border-color: var(--neon-magenta);
+            margin: 0;
+            padding: 12px;
+          "
+          onclick="openEmergencyModal()"
+        >
+          ⚠️ INITIATE FORCE SHUTDOWN_
+        </button>
+        {% endif %}
+      </div>
+
+      <form id="mainConfigForm" method="POST" action="/update" class="grid">
+        <div class="card">
+          <h2>01 // TRADING PARAMETERS</h2>
+          <div class="form-group">
+            <label>Lot Awal (InpLots)</label>
+            <input
+              type="number"
+              step="0.01"
+              name="InpLots"
+              id="input-InpLots"
+              value="{{ settings.InpLots }}"
+            />
+          </div>
+          <div class="form-group">
+            <label>Max Layer (InpMaxOpenPositions)</label>
+            <input
+              type="number"
+              name="InpMaxOpenPositions"
+              id="input-InpMaxOpenPositions"
+              value="{{ settings.InpMaxOpenPositions }}"
+            />
+          </div>
+          <div class="form-group">
+            <label>Min Distance Layer (InpMinDistanceEntries)</label>
+            <input
+              type="number"
+              name="InpMinDistanceEntries"
+              id="input-InpMinDistanceEntries"
+              value="{{ settings.InpMinDistanceEntries }}"
+            />
+          </div>
+          <div
+            class="form-group"
+            style="
+              border-top: 1px dashed rgba(0, 240, 255, 0.3);
+              padding-top: 10px;
+            "
+          >
+            <label style="color: var(--neon-cyan)"
+              >Max Allowed Spread (InpMaxAllowedSpread) 🌟</label
+            >
+            <input
+              type="number"
+              step="1"
+              name="InpMaxAllowedSpread"
+              id="input-InpMaxAllowedSpread"
+              value="{{ settings.InpMaxAllowedSpread }}"
+            />
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>02 // SUPAPER TREND</h2>
+          <div class="form-group">
+            <label>ATR Period (InpATRPeriod)</label>
+            <input
+              type="number"
+              name="InpATRPeriod"
+              id="input-InpATRPeriod"
+              value="{{ settings.InpATRPeriod }}"
+            />
+          </div>
+          <div class="form-group">
+            <label>ATR Multiplier (InpATREntry)</label>
+            <input
+              type="number"
+              step="0.1"
+              name="InpATREntry"
+              id="input-InpATREntry"
+              value="{{ settings.InpATREntry }}"
+            />
+          </div>
+          <div class="form-group">
+            <label>Nilai Sinyal Tren (InmSinyalTren)</label>
+            <input
+              type="number"
+              step="0.1"
+              name="InmSinyalTren"
+              id="input-InmSinyalTren"
+              value="{{ settings.InmSinyalTren }}"
+            />
+          </div>
+          <div
+            class="form-group"
+            style="
+              border-top: 1px dashed rgba(0, 240, 255, 0.3);
+              padding-top: 10px;
+            "
+          >
+            <label>Filter Arah Tren Utama (InpAktifFilterGaris)</label>
+            <select name="InpAktifFilterGaris" id="input-InpAktifFilterGaris">
+              <option
+                value="true"
+                {%
+                if
+                settings.InpAktifFilterGaris
+                %}selected{%
+                endif
+                %}
+              >
+                TRUE (ACTIVE)
+              </option>
+              <option
+                value="false"
+                {%
+                if
+                not
+                settings.InpAktifFilterGaris
+                %}selected{%
+                endif
+                %}
+              >
+                FALSE (DEACTIVATED)
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>03 // MARTINGALE MATRIX</h2>
+          <div class="form-group">
+            <label>Aktifkan Martingale (InpUseMartingale)</label>
+            <select name="InpUseMartingale" id="input-InpUseMartingale">
+              <option
+                value="true"
+                {%
+                if
+                settings.InpUseMartingale
+                %}selected{%
+                endif
+                %}
+              >
+                TRUE (ACTIVE)
+              </option>
+              <option
+                value="false"
+                {%
+                if
+                not
+                settings.InpUseMartingale
+                %}selected{%
+                endif
+                %}
+              >
+                FALSE (DEACTIVATED)
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Multiplier Factor (InpMartingaleMultiplier)</label>
+            <input
+              type="number"
+              step="0.1"
+              name="InpMartingaleMultiplier"
+              id="input-InpMartingaleMultiplier"
+              value="{{ settings.InpMartingaleMultiplier }}"
+            />
+          </div>
+          <div class="form-group">
+            <label>Max Lot Limits (InpMaxMartingaleLots)</label>
+            <input
+              type="number"
+              step="0.01"
+              name="InpMaxMartingaleLots"
+              id="input-InpMaxMartingaleLots"
+              value="{{ settings.InpMaxMartingaleLots }}"
+            />
+          </div>
+          <div
+            class="form-group"
+            style="
+              border-top: 1px dashed rgba(0, 240, 255, 0.3);
+              padding-top: 10px;
+            "
+          >
+            <label style="color: var(--neon-magenta)"
+              >Martingale Trigger Points (InpMartingaleTriggerPoints)</label
+            >
+            <input
+              type="number"
+              name="InpMartingaleTriggerPoints"
+              id="input-InpMartingaleTriggerPoints"
+              value="{{ settings.InpMartingaleTriggerPoints }}"
+            />
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>04 // DEFENSE & TRAILING SINGLE</h2>
+          <div class="form-group">
+            <label>Stop Loss (InpSL)</label>
+            <input
+              type="number"
+              name="InpSL"
+              id="input-InpSL"
+              value="{{ settings.InpSL }}"
+            />
+          </div>
+          <div class="form-group">
+            <label>Aktifkan Trailing Stop (InpAktifTrailing)</label>
+            <select name="InpAktifTrailing" id="input-InpAktifTrailing">
+              <option
+                value="true"
+                {%
+                if
+                settings.InpAktifTrailing
+                %}selected{%
+                endif
+                %}
+              >
+                TRUE
+              </option>
+              <option
+                value="false"
+                {%
+                if
+                not
+                settings.InpAktifTrailing
+                %}selected{%
+                endif
+                %}
+              >
+                FALSE
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Jarak Trailing (InpJarakTrailing)</label>
+            <input
+              type="number"
+              name="InpJarakTrailing"
+              id="input-InpJarakTrailing"
+              value="{{ settings.InpJarakTrailing }}"
+            />
+          </div>
+          <div class="form-group">
+            <label>Syarat Trailing Active (InpTrailingAktif)</label>
+            <input
+              type="number"
+              name="InpTrailingAktif"
+              id="input-InpTrailingAktif"
+              value="{{ settings.InpTrailingAktif }}"
+            />
+          </div>
+        </div>
+
+        <div class="card" style="border-color: var(--neon-green)">
+          <h2>04.2 // AVERAGE TRAILING MATRIX</h2>
+          <div class="form-group">
+            <label>Aktifkan Avg Trailing (InpAktifAvgTrailing)</label>
+            <select name="InpAktifAvgTrailing" id="input-InpAktifAvgTrailing">
+              <option
+                value="true"
+                {%
+                if
+                settings.InpAktifAvgTrailing
+                %}selected{%
+                endif
+                %}
+              >
+                TRUE
+              </option>
+              <option
+                value="false"
+                {%
+                if
+                not
+                settings.InpAktifAvgTrailing
+                %}selected{%
+                endif
+                %}
+              >
+                FALSE
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Jarak Avg Trailing (InpJarakAvgTrailing)</label>
+            <input
+              type="number"
+              name="InpJarakAvgTrailing"
+              id="input-InpJarakAvgTrailing"
+              value="{{ settings.InpJarakAvgTrailing }}"
+            />
+          </div>
+          <div
+            class="form-group"
+            style="
+              border-top: 1px dashed rgba(57, 255, 20, 0.3);
+              padding-top: 10px;
+              margin-bottom: 15px;
+            "
+          >
+            <label style="color: var(--neon-magenta)"
+              >Martingale Max Hard Loss (InpMaxLossCurrency)</label
+            >
+            <input
+              type="number"
+              step="0.01"
+              name="InpMaxLossCurrency"
+              id="input-InpMaxLossCurrency"
+              value="{{ settings.InpMaxLossCurrency }}"
+            />
+          </div>
+          <div
+            class="form-group"
+            style="
+              border-top: 1px dashed rgba(57, 255, 20, 0.3);
+              padding-top: 10px;
+            "
+          >
+            <label style="color: var(--neon-cyan)"
+              >Martingale BE Target Profit (InpMartingaleBEProfit) 🌟</label
+            >
+            <input
+              type="number"
+              step="0.01"
+              name="InpMartingaleBEProfit"
+              id="input-InpMartingaleBEProfit"
+              value="{{ settings.InpMartingaleBEProfit }}"
+            />
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>05 // REVENUE EXTRACTION</h2>
+          <div class="form-group">
+            <label>Partial TP 50% (InpAktifTPPartial)</label>
+            <select name="InpAktifTPPartial" id="input-InpAktifTPPartial">
+              <option
+                value="true"
+                {%
+                if
+                settings.InpAktifTPPartial
+                %}selected{%
+                endif
+                %}
+              >
+                TRUE
+              </option>
+              <option
+                value="false"
+                {%
+                if
+                not
+                settings.InpAktifTPPartial
+                %}selected{%
+                endif
+                %}
+              >
+                FALSE
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Jarak Target Partial (InpJarakTPPartial)</label>
+            <input
+              type="number"
+              name="InpJarakTPPartial"
+              id="input-InpJarakTPPartial"
+              value="{{ settings.InpJarakTPPartial }}"
+            />
+          </div>
+          <div
+            class="form-group"
+            style="
+              border-top: 1px dashed rgba(0, 240, 255, 0.3);
+              padding-top: 10px;
+            "
+          >
+            <label style="color: var(--neon-green)"
+              >Input Target Profit Gabungan (InpTargetProfitMataUang) 🌟</label
+            >
+            <input
+              type="number"
+              step="0.01"
+              name="InpTargetProfitMataUang"
+              id="input-InpTargetProfitMataUang"
+              value="{{ settings.InpTargetProfitMataUang }}"
+            />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-submit">
+          >> EXECUTE_NEW_CONFIG_MATRIX_
+        </button>
+      </form>
+
+      <br />
+      <hr style="border: 1px dashed rgba(0, 240, 255, 0.2)" />
+      <br />
+
+      <div class="grid">
+        <div class="card">
+          <h2>06 // ARCHIVE: DOWNLOAD SETTING</h2>
+          <form method="GET" action="/download_config">
+            <div class="form-group">
+              <label>Nama File Target</label>
+              <input type="text" name="filename" value="cyberpunk_set1" />
+            </div>
+            <button type="submit" class="btn-sec">
+              💾 DOWNLOAD .JSON SET FILE
+            </button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>07 // ARCHIVE: UPLOAD SETTING</h2>
+          <form id="uploadFileForm" enctype="multipart/form-data">
+            <div class="form-group">
+              <label>Pilih File (.json)</label>
+              <input
+                type="file"
+                id="fileInput"
+                name="file"
+                accept=".json"
+                required
+              />
+            </div>
+            <button
+              type="button"
+              onclick="previewJsonFile()"
+              class="btn-sec"
+              style="color: var(--neon-cyan); border-color: var(--neon-cyan)"
+            >
+              ⚡ PREVIEW & LOAD MATRIX
+            </button>
+          </form>
+        </div>
+
+        <div class="card">
+          <h2>🗄️ SAVED SETTINGS DATABASE</h2>
+          <p style="font-size: 0.8rem; color: #8888cc">
+            Konfigurasi tersimpan di dalam folder local terminal storage.
+          </p>
+          <div style="max-height: 180px; overflow-y: auto">
+            <table class="file-table">
+              <tbody id="saved-files-list"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="grid-column: 1 / -1">
+          <h2>08 // DIRECT MATRIX TEXT INJECTOR (PASTE JSON)</h2>
+          <form id="rawTextForm">
+            <div class="form-group">
+              <label>Raw JSON String Terminal</label>
+              <textarea
+                id="jsonTextArea"
+                name="json_text"
+                rows="6"
+                placeholder="Masukan data settingan..."
+                required
+              ></textarea>
+            </div>
+            <button
+              type="button"
+              onclick="previewJsonText()"
+              class="btn-submit"
+              style="border-color: #ffaa00; color: #ffaa00; margin-top: 0"
+            >
+              ⚡ PREVIEW RAW JSON STRING_
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+<script>
+      let currentDeleteTarget = '';
+
+      // System Toast Notification Custom
+      function showToast(message, type = 'success') {
+          const container = document.getElementById('toast-container');
+          const toast = document.createElement('div');
+          toast.className = 'toast';
+          if (type === 'error') {
+              toast.style.borderColor = 'var(--neon-magenta)';
+              toast.style.boxShadow = '0 0 15px rgba(255, 0, 85, 0.2)';
+          } else if (type === 'amber') {
+              toast.style.borderColor = 'var(--neon-amber)';
+              toast.style.boxShadow = '0 0 15px rgba(255, 170, 0, 0.2)';
+          }
+          toast.innerText = `[SYS_LOG] ${message}`;
+          container.appendChild(toast);
+          setTimeout(() => { toast.remove(); }, 4000);
+      }
+
+      // Capture flash status dari server backend
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          {% for message in messages %}
+            showToast("{{ message }}");
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      // Control Emergency Modal Modifiers
+      function openEmergencyModal() { document.getElementById('emergencyModal').style.display = 'flex'; }
+      function closeEmergencyModal() { document.getElementById('emergencyModal').style.display = 'none'; }
+
+      // Custom Card Confirmation Delete Functions
+      function triggerDeleteConfirmation(filename) {
+          currentDeleteTarget = filename;
+          document.getElementById('target-delete-filename').innerText = filename;
+          document.getElementById('deleteConfirmModal').style.display = 'flex';
+      }
+
+      function closeDeleteModal() {
+          document.getElementById('deleteConfirmModal').style.display = 'none';
+          currentDeleteTarget = '';
+      }
+
+      // ==========================================
+      // AUTOMATIC DATABASE CORE ENGINE (FETCHING)
+      // ==========================================
+      
+      // Mengambil daftar berkas JSON dari server backend
+      function loadSavedFiles() {
+          // Menembak endpoint list file (menyesuaikan rute bawaan server.py kamu)
+          fetch('/api/list_configs')
+          .then(res => res.json())
+          .then(files => {
+              const tbody = document.getElementById('saved-files-list');
+              tbody.innerHTML = ''; // Clear sector memory browser
+
+              // Jika response kosong atau disaring oleh server
+              if (!files || files.length === 0) {
+                  tbody.innerHTML = `<tr><td style="color: var(--neon-magenta); text-align: center; padding: 15px;">[ MEMORY_SECTOR_EMPTY ]</td></tr>`;
+                  return;
+              }
+
+              // Render list file ke dalam baris tabel
+              files.forEach(file => {
+                  const tr = document.createElement('tr');
+                  tr.innerHTML = `
+                      <td style="font-family: monospace; color: var(--neon-green); font-size: 0.9rem;">${file}</td>
+                      <td class="file-actions">
+                          <i class="fa-solid fa-eye action-icon view-icon" onclick="loadSingleConfig('${file}')" title="Load Matrix Parameters"></i>
+                          <i class="fa-solid fa-trash action-icon delete-icon" onclick="triggerDeleteConfirmation('${file}')" title="Wipe Sector File"></i>
+                      </td>
+                  `;
+                  tbody.appendChild(tr);
+              });
+          })
+          .catch(err => {
+              console.error("[CRITICAL] Database syncing broken:", err);
+              const tbody = document.getElementById('saved-files-list');
+              tbody.innerHTML = `<tr><td style="color: var(--neon-amber); text-align: center; padding: 15px;">[ LINK_REFUSED_BY_HOST ]</td></tr>`;
+          });
+      }
+
+      // Membaca isi satu file JSON dan menyuntikkannya langsung ke input form UI
+      function loadSingleConfig(filename) {
+          fetch(`/api/get_config_file?filename=${filename}`)
+          .then(res => {
+              if (!res.ok) throw new Error("File missing on server drive.");
+              return res.json();
+          })
+          .then(data => {
+              applyToInputs(data);
+              showToast(`Injected configuration matrix: ${filename}`, "amber");
+          })
+          .catch(err => {
+              showToast("Gagal menarik data dari server storage!", "error");
+          });
+      }
+
+      // Jalankan mapping otomatis saat core interface selesai di-load browser
+      document.addEventListener('DOMContentLoaded', loadSavedFiles);
+
+      // Action listener untuk eksekusi penghapusan dari Modal Card
+      document.getElementById('executeDeleteBtn').addEventListener('click', function() {
+          if (!currentDeleteTarget) return;
+          
+          fetch(`/api/delete_config?filename=${currentDeleteTarget}`, {
+              method: 'DELETE'
+          })
+          .then(res => res.json())
+          .then(data => {
+              closeDeleteModal();
+              if (data.status === 'success') {
+                  showToast(`Core wiped: ${data.message}`);
+                  loadSavedFiles(); // Mengosongkan data baris yang terhapus secara real-time
+              } else {
+                  showToast(`Security bypass failed: ${data.message}`, "error");
+              }
+          })
+          .catch(err => {
+              closeDeleteModal();
+              showToast("Failed to establish link to core server database.", "error");
+          });
+      });
+
+      // Intercept submit form utama untuk menampilkan custom toast
+      document.getElementById('mainConfigForm').addEventListener('submit', function(e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          fetch('/update', { method: 'POST', body: formData })
+          .then(res => res.json())
+          .then(data => {
+              if(data.status === 'success') {
+                  showToast("MATRIX OVERWRITE SUCCESSFUL!");
+              }
+          });
+      });
+
+      // Preview File JSON ke Input Form (Tidak Langsung Save)
+      function previewJsonFile() {
+          const fileInput = document.getElementById('fileInput');
+          if (fileInput.files.length === 0) return showToast("Pilih file terlebih dahulu!", "error");
+
+          const file = fileInput.files[0];
+          const reader = new FileReader();
+          reader.onload = function(e) {
+              try {
+                  const data = JSON.parse(e.target.result);
+                  applyToInputs(data);
+              } catch(err) {
+                  showToast("File rusak atau bukan JSON standar!", "error");
+              }
+          };
+          reader.readAsText(file);
+      }
+
+      // Preview Raw Text JSON ke Input Form (Tidak Langsung Save)
+      function previewJsonText() {
+          const text = document.getElementById('jsonTextArea').value.trim();
+          if (!text) return showToast("Kolom text JSON kosong!", "error");
+          try {
+              const data = JSON.parse(text);
+              applyToInputs(data);
+          } catch(err) {
+              showToast("Format string JSON salah / Gagal Parse!", "error");
+          }
+      }
+
+      // Fungsi utilitas memasukan object data json ke kolom input ui
+      function applyToInputs(data) {
+          let updateCount = 0;
+          for (const [key, value] of Object.entries(data)) {
+              const element = document.getElementById(`input-${key}`);
+              if (element) {
+                  if (element.tagName === 'SELECT') {
+                      element.value = value.toString();
+                  } else {
+                      element.value = value;
+                  }
+                  updateCount++;
+              }
+          }
+          showToast(`Loaded ${updateCount} parameters successfully! Apply changes via main submit.`, "amber");
+      }
+      // ==========================================
+// TELEMETRY REAL-TIME AUTOMATIC SYNC
+// ==========================================
+
+function updateTelemetryRealtime() {
+    // Menembak endpoint GET live telemetry data yang ada di server.py kamu
+    fetch('/api/live_telemetry_data')
+    .then(res => {
+        if (!res.ok) throw new Error("Network response was not ok");
+        return res.json();
+    })
+    .then(data => {
+        // 1. Update text content pada UI Telemetry Card secara dinamis
+        document.getElementById('val-pair-tf').innerText = data.pair_tf || '-- [--]';
+        document.getElementById('val-balance').innerText = `$ ${data.balance}`;
+        document.getElementById('val-equity').innerText = `$ ${data.equity}`;
+        document.getElementById('val-free-margin').innerText = `$ ${data.free_margin}`;
+        
+        // 2. Handle visual warna untuk floating profit/loss (Hijau jika +, Merah jika -)
+        const profitEl = document.getElementById('val-profit');
+        profitEl.innerText = `$ ${data.profit}`;
+        if (parseFloat(data.profit) >= 0) {
+            profitEl.style.color = 'var(--neon-green)';
+        } else {
+            profitEl.style.color = 'var(--neon-magenta)';
+        }
+
+        document.getElementById('val-layers').innerText = data.layers;
+        document.getElementById('val-signal').innerText = data.signal || 'WAITING_EA...';
+
+        // console.log("[TELEMETRY] Core matrix synchronised successfully.");
+    })
+    .catch(err => {
+        console.error("[CRITICAL] Failed to auto-sync telemetry from core:", err);
+    });
+}
+
+// Menjalankan fungsi sync pertama kali saat web dibuka
+document.addEventListener('DOMContentLoaded', function() {
+    updateTelemetryRealtime();
+    
+    // LOOP CORE: Eksekusi otomatis fungsi di atas setiap 2000 milidetik (2 detik)
+    setInterval(updateTelemetryRealtime, 1000); 
+});
+    </script>
+  </body>
+</html>
