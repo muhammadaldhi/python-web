@@ -1,9 +1,10 @@
 import os
 import json
-from flask import Flask, jsonify, request, render_template, send_file, make_response, flash
+from flask import Flask, jsonify, request, render_template, send_file, make_response, flash, session, redirect
+
 
 app = Flask(__name__)
-app.secret_key = "NETRUNNER_SECRET_KEY_MATRIX" # Diperlukan untuk flash message pipeline
+app.secret_key = "NETRUNNER_SECRET_KEY_MATRIX" # Diperlukan untuk flash message pipeline dan session encryption
 
 CONFIG_DIR = "saved_settings"
 if not os.path.exists(CONFIG_DIR):
@@ -87,14 +88,38 @@ def parse_and_save_json(data_dict):
 
 @app.route('/')
 def index():
+    if not session.get('logged_in'):
+        return redirect('/login')
     response = make_response(render_template('cyberpunk_ui.html', settings=ea_settings, telemetry=dashboard_data))
     response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if session.get('logged_in'):
+        return redirect('/')
+        
+    if request.method == 'POST':
+        password = request.form.get('password')
+        if password == '13456789':
+            session['logged_in'] = True
+            return redirect('/')
+        else:
+            flash("ACCESS_DENIED: INVALID_PASSKEY_SEQUENCE")
+            
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/login')
+
 @app.route('/update', methods=['POST'])
 def update():
+    if not session.get('logged_in'):
+        return jsonify({"status": "error", "message": "UNAUTHORIZED_ACCESS"}), 401
     global ea_settings
     ea_settings['InpLots'] = float(request.form['InpLots'])
     ea_settings['InpMaxOpenPositions'] = int(request.form['InpMaxOpenPositions'])
@@ -154,6 +179,8 @@ def live_telemetry_data():
 
 @app.route('/emergency_stop', methods=['POST'])
 def emergency_stop():
+    if not session.get('logged_in'):
+        return "Unauthorized", 401
     global ea_settings
     ea_settings['InpEmergencyStop'] = True
     with open(ACTIVE_CONFIG_PATH, 'w') as f:
@@ -163,6 +190,8 @@ def emergency_stop():
 
 @app.route('/emergency_reset', methods=['POST'])
 def emergency_reset():
+    if not session.get('logged_in'):
+        return "Unauthorized", 401
     global ea_settings
     ea_settings['InpEmergencyStop'] = False
     with open(ACTIVE_CONFIG_PATH, 'w') as f:
@@ -176,6 +205,8 @@ def get_settings():
 
 @app.route('/download_config', methods=['GET'])
 def download_config():
+    if not session.get('logged_in'):
+        return "Unauthorized", 401
     filename = request.args.get('filename', 'cyberpunk_config').strip()
     if not filename:
         filename = "cyberpunk_config"
@@ -205,6 +236,8 @@ def get_config_file():
 
 @app.route('/api/delete_config', methods=['DELETE'])
 def delete_config():
+    if not session.get('logged_in'):
+        return jsonify({"status": "error", "message": "UNAUTHORIZED"}), 401
     filename = request.args.get('filename', '')
     safe_path = os.path.join(CONFIG_DIR, filename)
     if os.path.exists(safe_path) and filename.endswith('.json') and filename != "active_settings.json":
