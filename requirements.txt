@@ -1,3 +1,2 @@
-pip install os
-pip install json
-pip install flask
+Flask==3.0.3
+gunicorn==23.0.0
