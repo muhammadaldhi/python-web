@@ -39,7 +39,6 @@
       }
 
       header {
-        position: relative;
         text-align: center;
         border-bottom: 3px double var(--neon-magenta);
         padding-bottom: 20px;
@@ -59,26 +58,6 @@
         color: var(--neon-cyan);
         font-size: 0.9rem;
         text-transform: uppercase;
-      }
-
-      .btn-logout {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        background: transparent;
-        border: 1px dashed var(--neon-magenta);
-        color: var(--neon-magenta);
-        padding: 5px 10px;
-        font-family: inherit;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.3s;
-      }
-
-      .btn-logout:hover {
-        background: var(--neon-magenta);
-        color: #000;
-        box-shadow: 0 0 10px var(--neon-magenta);
       }
 
       .grid {
@@ -200,6 +179,27 @@
         background: var(--neon-magenta);
         color: #000;
         box-shadow: 0 0 10px var(--neon-magenta);
+      }
+
+      .btn-logout {
+        background: transparent;
+        border: 1px dashed var(--neon-magenta);
+        color: var(--neon-magenta);
+        padding: 12px;
+        font-family: inherit;
+        font-size: 1rem;
+        cursor: pointer;
+        width: 100%;
+        text-transform: uppercase;
+        margin-top: 30px;
+        letter-spacing: 2px;
+        transition: all 0.3s;
+      }
+
+      .btn-logout:hover {
+        background: var(--neon-magenta);
+        color: #000;
+        box-shadow: 0 0 15px var(--neon-magenta);
       }
 
       .telemetry-row {
@@ -471,7 +471,6 @@
 
     <div class="container">
       <header>
-        <button class="btn-logout" onclick="window.location.href='/logout'">[ LOGOUT_TERMINAL ]</button>
         <h1>ALWI-EA // NETRUNNER</h1>
         <p>
           <span class="live-tag"></span> MAIN CONTROL PANEL //
@@ -1101,6 +1100,9 @@
           </form>
         </div>
       </div>
+
+      <!-- TOMBOL LOGOUT SEKARANG DI SINI (PALING BAWAH CONTAINER) -->
+      <button class="btn-logout" onclick="window.location.href='/logout'">[ LOGOUT_TERMINAL_SESSION ]</button>
     </div>
 
 <script>
